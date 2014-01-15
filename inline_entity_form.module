@@ -785,11 +785,21 @@ function inline_entity_form_form_alter(&$form, &$form_state, $form_id) {
   if (!empty($form_state['inline_entity_form'])) {
     $submit = array_merge(array('inline_entity_form_trigger_submit'), $form['#submit']);
     if (!empty($form['submit'])) {
-      $form['submit']['#submit'] = array_merge($submit, $form['submit']['#submit']);
+      if (!empty($form['submit']['#submit'])) {
+        $form['submit']['#submit'] = array_merge($submit, $form['submit']['#submit']);
+      }
+      else{
+        $form['submit']['#submit'] = $submit;
+      }
       $form['submit']['#ief_submit_all'] = TRUE;
     }
     elseif (!empty($form['actions']['submit'])) {
-      $form['actions']['submit']['#submit'] = array_merge($submit, $form['actions']['submit']['#submit']);
+      if (!empty($form['actions']['submit']['#submit'])){
+        $form['actions']['submit']['#submit'] = array_merge($submit, $form['actions']['submit']['#submit']);
+      }
+      else{
+        $form['actions']['submit']['#submit'] = $submit;
+      }
       $form['actions']['submit']['#ief_submit_all'] = TRUE;
     }
   }

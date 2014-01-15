@@ -1453,6 +1453,11 @@ function inline_entity_form_field_attach_submit($parent_entity_type, $parent_ent
         continue;
       }
       $langcode = $form[$field_name]['#language'];
+      if (!isset($form[$field_name][$langcode]['#ief_id'])) {
+        // The field is present on the form, but the IEF widget wasn't added,
+        // usually due to inline_entity_form_field_widget_properties_alter().
+        continue;
+      }
       $ief_id = $form[$field_name][$langcode]['#ief_id'];
       if (empty($form_state['inline_entity_form'][$ief_id])) {
         // No data found, no need to do anything.

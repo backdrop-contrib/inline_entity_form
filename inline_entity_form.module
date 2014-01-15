@@ -301,10 +301,10 @@ function inline_entity_form_field_widget_settings_form($field, $instance) {
  * by the field type.
  */
 function inline_entity_form_field_widget_properties_alter(&$widget, $context) {
-  $view = views_get_current_view();
   $is_ief_widget = (strpos($widget['type'], 'inline_entity_form') === 0);
+  $view = module_exists('views') && views_get_current_view();
   $has_vbo = module_exists('views_bulk_operations');
-  if ($view && $is_ief_widget && $has_vbo) {
+  if ($is_ief_widget && $view && $has_vbo) {
     $vbo = _views_bulk_operations_get_field($view);
     if ($vbo) {
       $field = $context['field'];

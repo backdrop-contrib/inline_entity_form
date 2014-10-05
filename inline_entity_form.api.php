@@ -65,8 +65,8 @@ function hook_inline_entity_form_settings_alter(&$settings, $field, $instance) {
  * @param $fields
  *   The table fields to alter. Each field is represented by an associative
  *   array containing the following keys:
- *   - type: either 'property' or 'field' to specify how the data is defined on
- *     the related entity.
+ *   - type: either 'property', 'field' or 'callback' to specify how the data is
+ *     defined on the related entity.
  *   - label: the title of the table field's column in the IEF table.
  *   - sanitized: for 'property' type table fields, a boolean indicating whether
  *     or not the data has already been sanitized for output; if not present or
@@ -75,6 +75,8 @@ function hook_inline_entity_form_settings_alter(&$settings, $field, $instance) {
  *   - formatter: for 'field' type table fields, the machine-name of the display
  *     formatter to use to render the field data.
  *   - weight: the sort order of the column in the IEF table.
+ *   - render_callback: for 'callback' type table fields, a function name that
+ *     returns a renderable array.
  * @param $context
  *   An array with the following keys:
  *   - parent_entity_type: The type of the parent entity.

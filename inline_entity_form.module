@@ -1490,13 +1490,21 @@ function inline_entity_form_field_attach_submit($parent_entity_type, $parent_ent
       uasort($values['entities'], 'drupal_sort_weight');
       // Go through the IEF data and assemble a list of ids.
       $entity_ids = array();
+      $need_reset = false;
       foreach ($values['entities'] as $item) {
         if ($item['needs_save']) {
           $controller->save($item['entity'], $context);
+          $need_reset = true;
         }
 
         list($entity_id) = entity_extract_ids($entity_type, $item['entity']);
         $entity_ids[] = array($values['settings']['column'] => $entity_id);
+      }
+
+      // Prevent the entity from showing up in subsequent add forms.
+      // @todo Investigate a cleaner fix.
+      if (isset($form['#op']) && $form['#op'] == 'add' && $need_reset) {
+        $form_state['inline_entity_form'][$ief_id]['entities'] = array();
       }
 
       if (!empty($entity_ids)) {

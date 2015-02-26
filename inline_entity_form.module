@@ -545,6 +545,7 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
     );
     drupal_alter('inline_entity_form_table_fields', $fields, $context);
     $element['entities']['#table_fields'] = $fields;
+    $weight_delta = max(ceil(count($form_state['inline_entity_form'][$ief_id]['entities']) * 1.2), 50);
 
     foreach ($form_state['inline_entity_form'][$ief_id]['entities'] as $key => $value) {
       // Data used by theme_inline_entity_form_entity_table().
@@ -592,7 +593,7 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
         $row = &$element['entities'][$key];
         $row['delta'] = array(
           '#type' => 'weight',
-          '#delta' => 50,
+          '#delta' => $weight_delta,
           '#default_value' => $value['weight'],
           '#attributes' => array('class' => array('ief-entity-delta')),
         );

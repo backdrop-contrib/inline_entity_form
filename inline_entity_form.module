@@ -707,19 +707,20 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
             '#value' => reset($settings['create_bundles']),
           );
         }
-
-        $element['actions']['ief_add'] = array(
-          '#type' => 'submit',
-          '#value' => t('Add new @type_singular', array('@type_singular' => $labels['singular'])),
-          '#name' => 'ief-' . $ief_id . '-add',
-          '#limit_validation_errors' => array(array_merge($parents, array('actions'))),
-          '#ajax' => array(
-            'callback' => 'inline_entity_form_get_element',
-            'wrapper' => $wrapper,
-          ),
-          '#submit' => array('inline_entity_form_open_form'),
-          '#ief_form' => 'add',
-        );
+        if ($controller->getSetting('allow_new')) {
+          $element['actions']['ief_add'] = array(
+            '#type' => 'submit',
+            '#value' => t('Add new @type_singular', array('@type_singular' => $labels['singular'])),
+            '#name' => 'ief-' . $ief_id . '-add',
+            '#limit_validation_errors' => array(array_merge($parents, array('actions'))),
+            '#ajax' => array(
+              'callback' => 'inline_entity_form_get_element',
+              'wrapper' => $wrapper,
+            ),
+            '#submit' => array('inline_entity_form_open_form'),
+            '#ief_form' => 'add',
+          );
+        }
       }
 
       if ($controller->getSetting('allow_existing')) {

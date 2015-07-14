@@ -801,16 +801,19 @@ function inline_entity_form_form_alter(&$form, &$form_state, $form_id) {
     }
 
     if ($submit_element) {
-      $submit = array_merge(array('inline_entity_form_trigger_submit'), $form['#submit']);
+      // Merge the IEF submit handler with the button level submit handlers if
+      // available. Otherwise use the form level submit handlers.
       if (!empty($submit_element['#submit'])){
-        $submit = array_merge($submit, $submit_element['#submit']);
-        // $form['#submit'] and $submit_element['#submit'] might have matching
-        // callbacks, resulting in duplicates and double processing.
-        $submit_element['#submit'] = array_unique($submit);
+        $submit = array_merge(array('inline_entity_form_trigger_submit'), (array) $submit_element['#submit']);
       }
-      else{
-        $submit_element['#submit'] = $submit;
+      else {
+        $submit = array_merge(array('inline_entity_form_trigger_submit'), (array) $form['#submit']);
       }
+
+      // Reduce any duplicates on the off chance the IEF submit handler was
+      // already a part of the array used.
+      $submit_element['#submit'] = array_unique($submit);
+
       $submit_element['#ief_submit_all'] = TRUE;
     }
   }

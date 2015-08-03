@@ -1545,11 +1545,11 @@ function inline_entity_form_field_attach_submit($parent_entity_type, $parent_ent
       uasort($values['entities'], 'drupal_sort_weight');
       // Go through the IEF data and assemble a list of ids.
       $entity_ids = array();
-      $need_reset = false;
+      $need_reset = FALSE;
       foreach ($values['entities'] as $item) {
         if ($item['needs_save']) {
           $controller->save($item['entity'], $context);
-          $need_reset = true;
+          $need_reset = TRUE;
         }
 
         list($entity_id) = entity_extract_ids($entity_type, $item['entity']);

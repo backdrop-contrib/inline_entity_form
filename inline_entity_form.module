@@ -682,10 +682,14 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
       return $element;
     }
 
-    // Try to open the add form (if it's the only allowed action, the
-    // field is required and empty, and there's only one allowed bundle).
-    if (empty($form_state['inline_entity_form'][$ief_id]['entities'])) {
-      if (count($settings['create_bundles']) == 1 && $instance['required'] && !$controller->getSetting('allow_existing')) {
+    $hide_cancel = FALSE;
+    // If the field is required and empty try to open one of the forms.
+    if (empty($form_state['inline_entity_form'][$ief_id]['entities']) && $instance['required']) {
+      if ($controller->getSetting('allow_existing') && !$controller->getSetting('allow_new')) {
+        $form_state['inline_entity_form'][$ief_id]['form'] = 'ief_add_existing';
+        $hide_cancel = TRUE;
+      }
+      elseif (count($settings['create_bundles']) == 1 && $controller->getSetting('allow_new') && !$controller->getSetting('allow_existing')) {
         $bundle = reset($settings['create_bundles']);
 
         // The parent entity type and bundle must not be the same as the inline
@@ -695,6 +699,7 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
           $form_state['inline_entity_form'][$ief_id]['form settings'] = array(
             'bundle' => $bundle,
           );
+          $hide_cancel = TRUE;
         }
       }
     }
@@ -779,14 +784,6 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
       if ($form_state['inline_entity_form'][$ief_id]['form'] == 'add') {
         $element['form']['#op'] = 'add';
         $element['form'] += inline_entity_form_entity_form($controller, $element['form'], $form_state);
-
-        // Hide the cancel button if the reference field is required but
-        // contains no values. That way the user is forced to create an entity.
-        if (!$controller->getSetting('allow_existing') && $instance['required']
-          && empty($form_state['inline_entity_form'][$ief_id]['entities'])
-          && count($settings['create_bundles']) == 1) {
-          $element['form']['actions']['ief_add_cancel']['#access'] = FALSE;
-        }
       }
       elseif ($form_state['inline_entity_form'][$ief_id]['form'] == 'ief_add_existing') {
         $element['form'] += inline_entity_form_reference_form($controller, $element['form'], $form_state);
@@ -794,6 +791,17 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
       elseif ($form_state['inline_entity_form'][$ief_id]['form'] == 'clone') {
         $element['form']['#op'] = 'clone';
         $element['form'] += inline_entity_form_entity_form($controller, $element['form'], $form_state);
+      }
+
+      // Pre-opened forms can't be closed in order to force the user to
+      // add / reference an entity.
+      if ($hide_cancel) {
+        if (isset($element['form']['actions']['ief_add_cancel'])) {
+          $element['form']['actions']['ief_add_cancel']['#access'] = FALSE;
+        }
+        elseif (isset($element['form']['actions']['ief_reference_cancel'])) {
+          $element['form']['actions']['ief_reference_cancel']['#access'] = FALSE;
+        }
       }
 
       // No entities have been added. Remove the outer fieldset to reduce

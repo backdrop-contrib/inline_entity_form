@@ -1166,7 +1166,7 @@ function inline_entity_form_reference_form_validate(&$reference_form, &$form_sta
     foreach ($form_state['inline_entity_form'][$ief_id]['entities'] as $key => $value) {
       if ($value['entity'] == $attach_entity) {
         form_set_error($parents_path . '][existing_entity', t('The selected @label has already been added.', array('@label' => $labels['singular'])));
-        unset($attach_entity);
+        break;
       }
     }
   }

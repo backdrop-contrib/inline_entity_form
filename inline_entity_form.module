@@ -723,6 +723,7 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
               $bundles[$bundle_name] = $bundle_info['label'];
             }
           }
+          asort($bundles);
 
           $element['actions']['bundle'] = array(
             '#type' => 'select',

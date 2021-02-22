@@ -247,6 +247,9 @@ class CommerceProductInlineEntityFormController extends EntityInlineEntityFormCo
       }
     }
 
+    $product_type = commerce_product_type_load($product->type);
+    $product->revision = $product_type['revision'];
+
     return $entity_form;
   }
 

@@ -43,6 +43,7 @@ class MultipleValuesWidgetTest extends InlineEntityFormTestBase {
       'view own unpublished content',
       'administer content types',
       'administer nodes',
+      'administer fields',
     ));
     $this->drupalLogin($this->administrator_user);
 

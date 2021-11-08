@@ -29,7 +29,7 @@ class TaxonomyTermInlineEntityFormController extends EntityInlineEntityFormContr
     $fields = array();
 
     $info = entity_get_info($this->entityType);
-    $metadata = entity_get_property_info($this->entityType);
+    $metadata = entity_plus_get_property_info($this->entityType);
 
     $label_key = $info['entity keys']['label'];
     $fields[$label_key] = array(
@@ -85,7 +85,7 @@ class TaxonomyTermInlineEntityFormController extends EntityInlineEntityFormContr
       '#weight' => !empty($extra_fields['description']) ? $extra_fields['description']['weight'] : -4,
     );
 
-    $langcode = entity_language('taxonomy_term', $term);
+    $langcode = $term->langcode;
     field_attach_form('taxonomy_term', $term, $entity_form, $form_state, $langcode);
 
     return $entity_form;

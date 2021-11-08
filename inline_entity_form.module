@@ -18,6 +18,19 @@ define('IEF_ENTITY_UNLINK', 1);
  */
 define('IEF_ENTITY_UNLINK_DELETE', 2);
 
+
+/**
+ * Implements hook_autoload_info().
+ */
+function inline_entity_form_autoload_info() {
+  return array(
+    'EntityInlineEntityFormController' => 'includes/entity.inline_entity_form.inc',
+    'NodeInlineEntityFormController' => 'includes/node.inline_entity_form.inc',
+    'TaxonomyTermInlineEntityFormController' => 'includes/taxonomy_term.inline_entity_form.inc',
+    'CommerceProductInlineEntityFormController' => 'includes/commerce_product.inline_entity_form.inc',
+    'CommerceLineItemInlineEntityFormController' => 'includes/commerce_line_item.inline_entity_form.inc',
+  );
+}
 /**
  * Implements hook_menu().
  */
@@ -79,7 +92,7 @@ function inline_entity_form_autocomplete($entity_type, $field_name, $bundle, $st
     $matches[$key] = '<div class="reference-autocomplete">' . $result . '</div>';
   }
 
-  drupal_json_output($matches);
+  backdrop_json_output($matches);
 }
 
 /**
@@ -345,7 +358,7 @@ function inline_entity_form_settings($field, $instance) {
   }
 
   // Allow other modules to alter the settings.
-  drupal_alter('inline_entity_form_settings', $settings, $field, $instance);
+  backdrop_alter('inline_entity_form_settings', $settings, $field, $instance);
 
   // If no specific bundle has been selected, assume all are available.
   if (empty($settings['bundles'])) {
@@ -386,7 +399,7 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
   $parents = array_merge($element['#field_parents'], array($element['#field_name'], $element['#language']));
 
   // Get the langcode of the parent entity.
-  $parent_langcode = entity_language($element['#entity_type'], $element['#entity']);
+  $parent_langcode = !empty($element['#entity']->langcode) ? $element['#entity']->langcode : LANGUAGE_NONE;
 
   // Assign a unique identifier to each IEF widget.
   // Since $parents can get quite long, sha1() ensures that every id has
@@ -410,14 +423,14 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
   if (module_exists('file')) {
     // file.js triggers uploads when the main Submit button is clicked.
     $element['#attached']['js'] = array(
-      drupal_get_path('module', 'file') . '/file.js',
-      drupal_get_path('module', 'inline_entity_form') . '/inline_entity_form.js',
+      backdrop_get_path('module', 'file') . '/file.js',
+      backdrop_get_path('module', 'inline_entity_form') . '/js/inline_entity_form.js',
     );
   }
 
   $base_css = array(
-    'base' => drupal_get_path('module', 'inline_entity_form') . '/theme/inline_entity_form.css',
-    'seven' => drupal_get_path('module', 'inline_entity_form') . '/theme/inline_entity_form.seven.css',
+    'base' => backdrop_get_path('module', 'inline_entity_form') . '/css/inline_entity_form.css',
+    'seven' => backdrop_get_path('module', 'inline_entity_form') . '/css/inline_entity_form.seven.css',
   );
   // Add the base module CSS.
   _inline_entity_form_attach_css($base_css, $element['#attached']['css']);
@@ -524,7 +537,7 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
       'entity_type' => $settings['entity_type'],
       'allowed_bundles' => $settings['bundles'],
     );
-    drupal_alter('inline_entity_form_table_fields', $fields, $context);
+    backdrop_alter('inline_entity_form_table_fields', $fields, $context);
     $element['entities']['#table_fields'] = $fields;
     $weight_delta = max(ceil(count($form_state['inline_entity_form'][$ief_id]['entities']) * 1.2), 50);
 
@@ -947,7 +960,7 @@ function inline_entity_form_entity_form($controller, $entity_form, &$form_state)
   $entity_form['#pre_render'][] = 'inline_entity_form_pre_render_add_fieldset_markup';
 
   // Allow other modules to alter the form.
-  drupal_alter('inline_entity_form_entity_form', $entity_form, $form_state);
+  backdrop_alter('inline_entity_form_entity_form', $entity_form, $form_state);
 
   return $entity_form;
 }
@@ -1083,7 +1096,7 @@ function inline_entity_form_reference_form($controller, $reference_form, &$form_
   $reference_form['#ief_element_submit'][] = 'inline_entity_form_reference_form_submit';
 
   // Allow other modules to alter the form.
-  drupal_alter('inline_entity_form_reference_form', $reference_form, $form_state);
+  backdrop_alter('inline_entity_form_reference_form', $reference_form, $form_state);
 
   return $reference_form;
 }
@@ -1121,7 +1134,7 @@ function inline_entity_form_reference_form_validate(&$reference_form, &$form_sta
   $controller = inline_entity_form_get_controller($instance);
   $labels = $controller->labels();
 
-  $form_values = drupal_array_get_nested_value($form_state['values'], $reference_form['#parents']);
+  $form_values = backdrop_array_get_nested_value($form_state['values'], $reference_form['#parents']);
   $attach_entity = entity_load_single($entity_type, $form_values['entity_id']);
 
   // Check to see if entity is already referenced by current IEF widget
@@ -1152,7 +1165,7 @@ function inline_entity_form_reference_form_submit($reference_form, &$form_state)
   $ief_id = $reference_form['#ief_id'];
   $entity_type = $reference_form['#entity_type'];
 
-  $form_values = drupal_array_get_nested_value($form_state['values'], $reference_form['#parents']);
+  $form_values = backdrop_array_get_nested_value($form_state['values'], $reference_form['#parents']);
   $attach_entity = entity_load_single($entity_type, $form_values['entity_id']);
 
   // Determine the correct weight of the new element.
@@ -1273,7 +1286,7 @@ function inline_entity_form_trigger_submit($form, &$form_state) {
     // A specific entity form was submitted, process it and all of its children.
     $array_parents = $form_state['triggering_element']['#array_parents'];
     $array_parents = array_slice($array_parents, 0, -2);
-    $element = drupal_array_get_nested_value($form, $array_parents);
+    $element = backdrop_array_get_nested_value($form, $array_parents);
     inline_entity_form_submit($element, $form_state);
   }
 }
@@ -1321,7 +1334,7 @@ function inline_entity_form_open_form($form, &$form_state) {
   $form_state['rebuild'] = TRUE;
   // Get the current form values.
   $parents = array_merge($element['#field_parents'], array($element['#field_name'], $element['#language']));
-  $form_values = drupal_array_get_nested_value($form_state['values'], $parents);
+  $form_values = backdrop_array_get_nested_value($form_state['values'], $parents);
 
   $form_state['inline_entity_form'][$ief_id]['form'] = $form_state['triggering_element']['#ief_form'];
   $form_state['inline_entity_form'][$ief_id]['form settings'] = array();
@@ -1520,7 +1533,7 @@ function inline_entity_form_field_attach_submit($parent_entity_type, $parent_ent
       }
 
       // Respect the entity weights.
-      uasort($values['entities'], 'drupal_sort_weight');
+      backdrop_sort($values['entities'], array('weight'));
       // Go through the IEF data and assemble a list of ids.
       $entity_ids = array();
       $need_reset = FALSE;
@@ -1592,7 +1605,7 @@ function inline_entity_form_get_element($form, $form_state) {
   $array_parents = array_slice($array_parents, 0, -2);
 
   while (!isset($element['#ief_root'])) {
-    $element = drupal_array_get_nested_value($form, $array_parents);
+    $element = backdrop_array_get_nested_value($form, $array_parents);
     array_pop($array_parents);
   }
 
@@ -1638,7 +1651,7 @@ function theme_inline_entity_form_entity_table($variables) {
   $fields = $form['#table_fields'];
   $has_tabledrag = inline_entity_form_has_tabledrag($form);
   // Sort the fields by weight.
-  uasort($fields, 'drupal_sort_weight');
+  backdrop_sort($fields, array('weight'));
 
   $header = array();
   if ($has_tabledrag) {
@@ -1675,7 +1688,7 @@ function theme_inline_entity_form_entity_table($variables) {
     $cells = array();
     if ($has_tabledrag) {
       $cells[] = array('data' => '', 'class' => array('ief-tabledrag-handle'));
-      $cells[] = drupal_render($form[$key]['delta']);
+      $cells[] = backdrop_render($form[$key]['delta']);
       $row_classes[] = 'draggable';
     }
     // Add a special class to rows that have a form underneath, to allow
@@ -1715,7 +1728,7 @@ function theme_inline_entity_form_entity_table($variables) {
             $renderable_data = array();
           }
         }
-        $data = drupal_render($renderable_data);
+        $data = backdrop_render($renderable_data);
       }
       elseif ($field['type'] == 'callback' && isset($field['render_callback']) && is_callable($field['render_callback'])) {
         $data = call_user_func($field['render_callback'], $entity_type, $entity);
@@ -1724,14 +1737,14 @@ function theme_inline_entity_form_entity_table($variables) {
       $cells[] = array('data' => $data, 'class' => array('inline-entity-form-' . $entity_type . '-' . $field_name));
     }
     // Add the buttons belonging to the "Operations" column.
-    $cells[] = drupal_render($form[$key]['actions']);
+    $cells[] = backdrop_render($form[$key]['actions']);
     // Create the row.
     $rows[] = array('data' => $cells, 'class' => $row_classes);
 
     // If the current entity array specifies a form, output it in the next row.
     if (!empty($form[$key]['form'])) {
       $row = array(
-        array('data' => drupal_render($form[$key]['form']), 'colspan' => count($fields) + 1),
+        array('data' => backdrop_render($form[$key]['form']), 'colspan' => count($fields) + 1),
       );
       $rows[] = array('data' => $row, 'class' => array('ief-row-form'), 'no_striping' => TRUE);
     }
@@ -1741,7 +1754,7 @@ function theme_inline_entity_form_entity_table($variables) {
     $id = 'ief-entity-table-' . $form['#id'];
     if ($has_tabledrag) {
       // Add the tabledrag JavaScript.
-      drupal_add_tabledrag($id, 'order', 'sibling', 'ief-entity-delta');
+      backdrop_add_tabledrag($id, 'order', 'sibling', 'ief-entity-delta');
     }
 
     // Return the themed table.

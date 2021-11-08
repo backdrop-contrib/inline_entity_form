@@ -65,7 +65,7 @@ class NodeInlineEntityFormController extends EntityInlineEntityFormController {
       '#weight' => 99,
     );
 
-    $langcode = entity_language('node', $node);
+    $langcode = $node->langcode;
     field_attach_form('node', $node, $entity_form, $form_state, $langcode);
 
     return $entity_form;
@@ -79,7 +79,7 @@ class NodeInlineEntityFormController extends EntityInlineEntityFormController {
 
     node_submit($entity_form['#entity']);
     $child_form_state = form_state_defaults();
-    $child_form_state['values'] = drupal_array_get_nested_value($form_state['values'], $entity_form['#parents']);
+    $child_form_state['values'] = backdrop_array_get_nested_value($form_state['values'], $entity_form['#parents']);
     foreach (module_implements('node_submit') as $module) {
       $function = $module . '_node_submit';
       $function($entity_form['#entity'], $entity_form, $child_form_state);

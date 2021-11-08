@@ -24,8 +24,8 @@ class EntityInlineEntityFormController {
    *
    * @code
    * return array(
-   *   'base' => drupal_get_path('module', 'test_module') . '/css/inline_entity_form.base.css',
-   *   'seven' => drupal_get_path('module', 'test_module') . '/css/inline_entity_form.seven.css',
+   *   'base' => backdrop_get_path('module', 'test_module') . '/css/inline_entity_form.base.css',
+   *   'seven' => backdrop_get_path('module', 'test_module') . '/css/inline_entity_form.seven.css',
    * );
    * @endcode
    */
@@ -92,7 +92,7 @@ class EntityInlineEntityFormController {
    */
   public function tableFields($bundles) {
     $info = entity_get_info($this->entityType);
-    $metadata = entity_get_property_info($this->entityType);
+    $metadata = entity_plus_get_property_info($this->entityType);
 
     $fields = array();
     if (!empty($info['entity keys']['label'])) {
@@ -268,7 +268,7 @@ class EntityInlineEntityFormController {
     $entity = $entity_form['#entity'];
 
     if (!empty($info['fieldable'])) {
-      $langcode = entity_language($this->entityType, $entity);
+      $langcode = !empty($entity->langcode) ? $entity->langcode : LANGUAGE_NONE;
       field_attach_form($this->entityType, $entity, $entity_form, $form_state, $langcode);
     }
 
@@ -308,7 +308,7 @@ class EntityInlineEntityFormController {
     $info = entity_get_info($this->entityType);
     list(, , $bundle) = entity_extract_ids($this->entityType, $entity_form['#entity']);
     $entity = $entity_form['#entity'];
-    $entity_values = drupal_array_get_nested_value($form_state['values'], $entity_form['#parents']);
+    $entity_values = backdrop_array_get_nested_value($form_state['values'], $entity_form['#parents']);
 
     // Copy top-level form values that are not for fields to entity properties,
     // without changing existing entity properties that are not being edited by
@@ -368,7 +368,7 @@ class EntityInlineEntityFormController {
   public function removeFormSubmit($remove_form, &$form_state) {
     $entity = $remove_form['#entity'];
     list($entity_id) = entity_extract_ids($this->entityType, $entity);
-    $form_values = drupal_array_get_nested_value($form_state['values'], $remove_form['#parents']);
+    $form_values = backdrop_array_get_nested_value($form_state['values'], $remove_form['#parents']);
     // This entity hasn't been saved yet, we can just unlink it.
     if (empty($entity_id)) {
       return IEF_ENTITY_UNLINK;
@@ -431,7 +431,7 @@ class EntityInlineEntityFormController {
    *   - parent_entity: The parent entity.
    */
   public function save($entity, $context) {
-    entity_save($this->entityType, $entity);
+    $entity->save();
   }
 
   /**

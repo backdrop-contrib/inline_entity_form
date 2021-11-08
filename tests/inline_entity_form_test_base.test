@@ -3,7 +3,7 @@
 /**
  * Base class for Inline Entity Form tests.
  */
-abstract class InlineEntityFormTestBase extends DrupalWebTestCase {
+abstract class InlineEntityFormTestBase extends BackdropWebTestCase {
 
   protected $user;
 

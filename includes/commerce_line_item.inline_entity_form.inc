@@ -125,7 +125,7 @@ class CommerceLineItemInlineEntityFormController extends EntityInlineEntityFormC
     $line_item = $entity_form['#entity'];
 
     $parents_path = implode('][', $entity_form['#parents']);
-    $line_item_values = drupal_array_get_nested_value($form_state['values'], $entity_form['#parents']);
+    $line_item_values = backdrop_array_get_nested_value($form_state['values'], $entity_form['#parents']);
     $quantity = $line_item_values['quantity'];
 
     if (!is_numeric($quantity) || $quantity <= 0) {
@@ -144,7 +144,7 @@ class CommerceLineItemInlineEntityFormController extends EntityInlineEntityFormC
    */
   public function entityFormSubmit(&$entity_form, &$form_state) {
     $line_item = $entity_form['#entity'];
-    $line_item_values = drupal_array_get_nested_value($form_state['values'], $entity_form['#parents']);
+    $line_item_values = backdrop_array_get_nested_value($form_state['values'], $entity_form['#parents']);
     $line_item->quantity = sprintf("%.2f", $line_item_values['quantity']);
     field_attach_submit('commerce_line_item', $line_item, $entity_form, $form_state);
 

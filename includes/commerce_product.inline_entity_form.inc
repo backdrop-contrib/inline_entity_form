@@ -390,7 +390,7 @@ class CommerceProductInlineEntityFormController extends EntityInlineEntityFormCo
    * referenced from a line item, or for some other reason), deletes the rest.
    */
   public function delete($ids, $context) {
-    $products = entity_load('commerce_product', $ids);
+    $products = entity_load_multiple('commerce_product', $ids);
     foreach ((array) $products as $product_id => $product) {
       if (!commerce_product_can_delete($product)) {
         $product->status = FALSE;

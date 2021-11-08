@@ -70,12 +70,6 @@ class TaxonomyTermInlineEntityFormController extends EntityInlineEntityFormContr
 
     $entity = $entity_form['#entity'];
 
-    // Set the vocabulary ID.
-    $vocabularies = taxonomy_vocabulary_get_names();
-    if (isset($vocabularies[$entity->vocabulary_machine_name])) {
-      $entity->vid = $vocabularies[$entity->vocabulary_machine_name]->vid;
-    }
-
     // Separate the description and format.
     $entity->format = $entity->description['format'];
     $entity->description = $entity->description['value'];

@@ -454,7 +454,7 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
     }
 
     $delta = 0;
-    foreach (entity_load($settings['entity_type'], $entity_ids) as $entity) {
+    foreach (entity_load_multiple($settings['entity_type'], $entity_ids) as $entity) {
       $form_state['inline_entity_form'][$ief_id]['entities'][$delta] = array(
         'entity' => $entity,
         'weight' => $delta,
@@ -1135,7 +1135,7 @@ function inline_entity_form_reference_form_validate(&$reference_form, &$form_sta
   $labels = $controller->labels();
 
   $form_values = backdrop_array_get_nested_value($form_state['values'], $reference_form['#parents']);
-  $attach_entity = entity_load_single($entity_type, $form_values['entity_id']);
+  $attach_entity = entity_load($entity_type, $form_values['entity_id']);
 
   // Check to see if entity is already referenced by current IEF widget
   if (!empty($attach_entity)) {
@@ -1166,7 +1166,7 @@ function inline_entity_form_reference_form_submit($reference_form, &$form_state)
   $entity_type = $reference_form['#entity_type'];
 
   $form_values = backdrop_array_get_nested_value($form_state['values'], $reference_form['#parents']);
-  $attach_entity = entity_load_single($entity_type, $form_values['entity_id']);
+  $attach_entity = entity_load($entity_type, $form_values['entity_id']);
 
   // Determine the correct weight of the new element.
   $weight = 0;

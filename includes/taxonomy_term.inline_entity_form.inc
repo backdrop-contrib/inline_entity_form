@@ -19,41 +19,11 @@ class TaxonomyTermInlineEntityFormController extends EntityInlineEntityFormContr
   }
 
   /**
-   * Overrides EntityInlineEntityFormController::tableFields().
-   *
-   * We can't use the parent class method because the taxonomy term metadata
-   * wrapper doesn't have a property that matches the entity bundle key.
-   * @todo: Remove this method once http://drupal.org/node/1662558 is fixed.
-   */
-  public function tableFields($bundles) {
-    $fields = array();
-
-    $info = entity_get_info($this->entityType);
-    $metadata = entity_plus_get_property_info($this->entityType);
-
-    $label_key = $info['entity keys']['label'];
-    $fields[$label_key] = array(
-      'type' => 'property',
-      'label' => $metadata ? $metadata['properties'][$label_key]['label'] : t('Label'),
-      'weight' => 1,
-    );
-
-    // Add the vocabulary type.
-    $fields['vocabulary'] = array(
-      'type' => 'property',
-      'label' => t('Vocabulary'),
-      'weight' => 2,
-    );
-
-    return $fields;
-  }
-
-  /**
    * Overrides EntityInlineEntityFormController::entityForm().
    */
   public function entityForm($entity_form, &$form_state) {
     $term = $entity_form['#entity'];
-    $extra_fields = field_info_extra_fields('taxonomy_term', $term->vocabulary_machine_name, 'form');
+    $extra_fields = field_info_extra_fields('taxonomy_term', $term->vocabulary, 'form');
 
     $defaults = array(
       'name' => '',

@@ -423,7 +423,7 @@ function inline_entity_form_field_widget_form(&$form, &$form_state, $field, $ins
   if (module_exists('file')) {
     // file.js triggers uploads when the main Submit button is clicked.
     $element['#attached']['js'] = array(
-      backdrop_get_path('module', 'file') . '/file.js',
+      backdrop_get_path('module', 'file') . '/js/file.js',
       backdrop_get_path('module', 'inline_entity_form') . '/js/inline_entity_form.js',
     );
   }

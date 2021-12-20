@@ -27,6 +27,7 @@ function inline_entity_form_autoload_info() {
     'EntityInlineEntityFormController' => 'includes/entity.inline_entity_form.inc',
     'NodeInlineEntityFormController' => 'includes/node.inline_entity_form.inc',
     'TaxonomyTermInlineEntityFormController' => 'includes/taxonomy_term.inline_entity_form.inc',
+    'FileInlineEntityFormController' => 'includes/file.inline_entity_form.inc',
     'CommerceProductInlineEntityFormController' => 'includes/commerce_product.inline_entity_form.inc',
     'CommerceLineItemInlineEntityFormController' => 'includes/commerce_line_item.inline_entity_form.inc',
   );
@@ -128,6 +129,11 @@ function inline_entity_form_entity_info_alter(&$entity_info) {
   if (isset($entity_info['taxonomy_term'])) {
     $entity_info['taxonomy_term']['inline entity form'] = array(
       'controller' => 'TaxonomyTermInlineEntityFormController',
+    );
+  }
+  if (isset($entity_info['file'])) {
+    $entity_info['file']['inline entity form'] = array(
+      'controller' => 'FileInlineEntityFormController',
     );
   }
   if (isset($entity_info['commerce_product'])) {

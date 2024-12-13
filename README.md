@@ -32,6 +32,13 @@ for inline management of entities.
 Has optimal UX when there's only one bundle selected (this is the
 "Product types that can be referenced" setting on product reference fields).
 
+Recommended
+-----------
+
+Install [IEF Table View Mode](https://backdropcms.org/project/ief_table_view_mode) for more control
+over the display of fields in the widget. Without the module a node, for example, will only display
+the node ID.
+
 Integrating with Inline Entity Form
 -----------------------------------
 
